@@ -1,5 +1,6 @@
 const app = require("./app");
 const {get, post} = require("axios");
+const notifyClient = require("./clientNotifier");
 
 app.listen(3031, function() {
     console.log("Server started on port 3031");
@@ -28,19 +29,19 @@ process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
 //catches uncaught exceptions
 process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
 
-function notifyClient() {
-    let server = "localhost:5500"
-    let client = {hostname: "ciccio", ip: "192.168.10.1"}
-
-    get(`http://${server}/api/`).then((result) => {
-        console.log(`result: ${result.data.message}`);
-    }).catch(function (error) {
-        console.log(`Connection failed: ${error}`);
-    })
-
-    post(`http://${server}/api/clients`, client).then((result) => {
-        console.log(`${result.data.message}`);
-    }).catch(function (error) {
-        console.log(`Client registration to Client Manager failed ${error}`);
-    })
-}
+// function notifyClient() {
+//     let server = "localhost:5500"
+//     let client = {hostname: "ciccio", ip: "192.168.10.1"}
+//
+//     get(`http://${server}/api/`).then((result) => {
+//         console.log(`result: ${result.data.message}`);
+//     }).catch(function (error) {
+//         console.log(`Connection failed: ${error}`);
+//     })
+//
+//     post(`http://${server}/api/clients`, client).then((result) => {
+//         console.log(`${result.data.message}`);
+//     }).catch(function (error) {
+//         console.log(`Client registration to Client Manager failed ${error}`);
+//     })
+// }
