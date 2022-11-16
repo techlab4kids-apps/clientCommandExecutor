@@ -1,3 +1,5 @@
+const os = require("os");
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -6,11 +8,18 @@ const notifyClient = require("./clientNotifier");
 const Command = require("./command");
 // const {notifyClient} = require('clientNotifier')
 
+const {io} = require("socket.io-client");
+const IP = require("ip");
+const server = process.env.SERVER_NAME
+const serverPort = process.env.SERVER_PORT
+
+let socket = io(`http://${server}:${serverPort}/client-namespace`);
+
 const app = express();
 
 app.use(cors({credentials: false, origin: '*'}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(express.static("public"));
 
@@ -38,6 +47,41 @@ app.get("/", (req, res) => {
     return "Ecchime!"
 })
 
+app.register = () => {
+    // socket.connect();
+
+    socket.on("connect", () => {
+        console.log("Current socket ID: " + socket.id);
+
+        const localHostName = os.hostname();
+        let client = {hostname: localHostName, ip: IP.address()}
+
+        socket.emit("introduce", client)
+    });
+
+    socket.on("launchCommand", (command, fn) => {
+        let cmd = new Command(command);
+        console.log("Starting to execute command: " + JSON.stringify(cmd));
+        let retValue = cmd.execute();
+        retValue.then(data => {
+                fn(data);
+                console.log("command terminated with retValue: " + JSON.stringify(data));
+            }
+        )
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Disconnecting socket");
+    });
+
+    socket.on("server_not_ready", () => {
+        socket.disconnect();
+        setTimeout(() => {
+            socket.connect();
+        }, 1000);
+    });
+};
+
 app.post("/commands/:scriptName", (req, res) => {
     const command = new Command({
         scriptName: req.body.scriptName,
@@ -53,10 +97,9 @@ app.post("/commands/:scriptName", (req, res) => {
             message: `Parametri: ${returnObject.processExitStatus.parameters}\nLog: ${returnObject.processExitStatus.log}`
         });
 
-        if(returnObject.processExitStatus.status == "OK") {
+        if (returnObject.processExitStatus.status == "OK") {
             res.status(200).send(returnObject);
-        }
-        else{
+        } else {
             res.status(500).send(returnObject);
         }
     });

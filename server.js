@@ -5,7 +5,8 @@ const notifyClient = require("./clientNotifier");
 app.listen(3031, function() {
     console.log("Server started on port 3031");
 
-    setInterval(notifyClient, 5 * 1000);
+    // setInterval(notifyClient, 5 * 1000);
+    app.register();
 });
 
 process.stdin.resume();//so the program will not close instantly

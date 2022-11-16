@@ -30,7 +30,7 @@ class Command {
             console.log('Stderr: ', e.stderr);
             console.log('Stdout: ', e.stdout);
 
-            let retValue = {"status": "KO", "log": "err: " + e + ";\nstdout: " + e.stdout + ";\nsrderr: " + e.stderr};
+            let retValue = {"status": "KO", "log": "err: " + e + ";\nstdout: " + e.stdout + ";\nstderr: " + e.stderr};
             return retValue;
         }
 
@@ -38,7 +38,7 @@ class Command {
             "status": "OK",
             "command": this.scriptName,
             "parameters": this.scriptParameters,
-            "log": "stdout: " + out.stdout + " \nsrderr: " + out.stderr
+            "log": "stdout: " + out.stdout + " \nstderr: " + out.stderr
         };
         out.processExitStatus = returnObject;
         return out;
@@ -64,7 +64,7 @@ class Command {
                     "status": "OK",
                     "command": this.scriptName,
                     "parameters": this.scriptParameters,
-                    "log": "stdout: " + out.stdout + " \nsrderr: " + out.stderr
+                    "log": "stdout: " + out.stdout + " \nstderr: " + out.stderr
                 };
                 out.processExitStatus = returnObject;
                 return {stderr: "", stdout: "", processExitStatus: returnObject};
