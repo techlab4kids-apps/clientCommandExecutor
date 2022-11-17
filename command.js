@@ -17,14 +17,17 @@ class Command {
         let out;
 
         // Don't remove: required to verify async call
-        // let promise = new Promise((resolve, reject) => {
-        //     setTimeout(() => resolve({stderr: "", stdout: "", processExitStatus: {}}), 4000)
-        // });
+        let promise = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log("timeout expired")
+                resolve({stderr: "", stdout: "", processExitStatus: {}})
+            }, 7000)
+        });
 
         try {
             // Don't remove: required to verify async call
-            // out = await promise;
-            out = await execShPromise(`${this.scriptName} ${this.scriptParameters}`, {cwd: this.scriptWorkingDirectory});
+            out = await promise;
+            //out = await execShPromise(`${this.scriptName} ${this.scriptParameters}`, {cwd: this.scriptWorkingDirectory});
         } catch (e) {
             console.log('Error: ', e);
             console.log('Stderr: ', e.stderr);
